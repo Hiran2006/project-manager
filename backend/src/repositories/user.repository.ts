@@ -29,4 +29,11 @@ async function createUser(user: {
   result.insertId
 }
 
-export default { findByEmail, createUser, findById }
+async function updatePassword(user_id: string, password_hash: string) {
+  await db.execute("update users set password_hash=? where id=?", [
+    password_hash,
+    user_id,
+  ])
+}
+
+export default { findByEmail, createUser, findById, updatePassword }

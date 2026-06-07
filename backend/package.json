@@ -27,6 +27,7 @@
     "@types/express": "^5.0.6",
     "@types/express-validator": "^2.20.33",
     "@types/jsonwebtoken": "^9.0.10",
+    "@types/nodemailer": "^8.0.0",
     "tsx": "^4.22.4",
     "typescript": "^6.0.3"
   }

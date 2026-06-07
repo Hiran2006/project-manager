@@ -28,4 +28,16 @@ router.post(
 router.post("/refresh", authController.refresh)
 router.post("/logout", authController.logout)
 
+router.post(
+  "/forget-password",
+  body("email").isEmail(),
+  validate,
+  authController.forgotPassword,
+)
+router.post(
+  "/reset-password",
+  [body("token").notEmpty(), body("password").isLength({ min: 6 })],
+  validate,
+  authController.resetPassword,
+)
 export default router

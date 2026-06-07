@@ -9,6 +9,12 @@ import {
 } from "@src/utils/jwt.js"
 import type { JwtPayload } from "jsonwebtoken"
 
+import crypto from "crypto"
+import passwordResetRepository from "@src/repositories/passwordReset.repository.js"
+
+import { sentResetEmail } from "@src/utils/mail.js"
+import { error } from "console"
+
 async function register(data: {
   name: string
   email: string
@@ -74,4 +80,39 @@ async function logout(refreshToken: string) {
   await sessionRepository.deleteByRefreshToken(refreshToken)
 }
 
-export default { register, login, refresh, logout }
+async function forgotPassword(email: string) {
+  const user = await userRepository.findByEmail(email)
+  if (!user) {
+    return {
+      message: "If the email exists, a reset link will be been generated",
+    }
+  }
+  const token = crypto.randomBytes(32).toString("hex")
+
+  const expiresAt = new Date(Date.now() + 60 * 60 * 1000)
+  await passwordResetRepository.createResetToken(user.id, token, expiresAt)
+  const resetLink = `http://localhost:5000/reset-password?token=${token}`
+  await sentResetEmail(user.email, resetLink)
+  return { message: "Password reset email sent" }
+}
+
+async function resetPassword(token: string, password: string) {
+  const reset = await passwordResetRepository.findByToken(token)
+  if (!reset) {
+    throw new Error("Invalid token")
+  }
+  if (new Date(reset.expires_at) < new Date()) {
+    throw new Error("Token Expired")
+  }
+  const passwordHash = await bcrypt.hash(password, 10)
+  await userRepository.updatePassword(reset.user_id, passwordHash)
+  await passwordResetRepository.deleteByToken(token)
+}
+export default {
+  register,
+  login,
+  refresh,
+  logout,
+  forgotPassword,
+  resetPassword,
+}
