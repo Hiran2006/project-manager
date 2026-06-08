@@ -1,6 +1,6 @@
 import userRepository from "@src/repositories/user.repository.js"
 import type { JwtPayload } from "jsonwebtoken"
-import type { Response } from "express"
+import type { Request, Response } from "express"
 
 async function getMe(req: Request & { user?: JwtPayload }, res: Response) {
   try {
