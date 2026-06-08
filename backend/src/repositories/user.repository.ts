@@ -26,7 +26,7 @@ async function createUser(user: {
     "insert into users(name,email,password_hash) values(?,?,?)",
     [user.name, user.email, user.passwordHash],
   )
-  result.insertId
+  return result.insertId
 }
 
 async function updatePassword(user_id: string, password_hash: string) {

@@ -1,6 +1,5 @@
 import authService from "@src/services/auth.service.js"
 import type { Request, Response } from "express"
-import { flushCompileCache } from "module"
 
 async function register(req: Request, res: Response) {
   try {
